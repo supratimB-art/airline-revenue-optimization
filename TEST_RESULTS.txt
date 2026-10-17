@@ -8,7 +8,7 @@ Commands:
   python -m pytest -q
 
 Result:
-  68 passed
+  69 passed
 
 Additional property stress test:
   500 randomly generated combinations of capacity, horizon, arrival probability,
@@ -16,8 +16,11 @@ Additional property stress test:
   values, monotonicity of value in time and capacity, and nonincreasing marginal
   seat value as capacity increases.
 
-Known validation limitation:
-  Streamlit was not installed in the offline validation runtime, so the dashboard
-  was syntax-compiled but not launched interactively. The project declares Streamlit
-  as a runtime dependency. The separate flight-price notebook was not rerun because
-  its original Flight_Prices.xlsx workbook was not supplied.
+Dashboard smoke test:
+  The dashboard default path executed with stubbed Streamlit widgets while using
+  real Plotly chart construction. A live Streamlit server was not launched because
+  Streamlit was not installed in the offline validation runtime.
+
+Other validation limitation:
+  The separate flight-price notebook was not rerun because its original
+  Flight_Prices.xlsx workbook was not supplied.
