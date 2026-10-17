@@ -1,2 +1,3 @@
-# airline-revenue-optimization
-Summer learning project exploring stochastic dynamic programming and airline revenue management, developed with academic guidance from Prof. Wang Zizhuo.
+# Airline Revenue Optimization
+
+Independent summer 2026 learning project on stochastic dynamic programming and airline seat-inventory control.
