@@ -12,7 +12,7 @@ import plotly.express as px
 import streamlit as st
 from airline_dp.model import solve_dp, solve_mean_fare_dp
 from airline_dp.policies import accept_all_policy, accept_if_fare_at_least, fixed_threshold_policy
-from airline_dp.simulation import compare_policies
+from airline_dp.simulation import compare_policies, paired_revenue_difference
 
 st.set_page_config(page_title="Airline Revenue Optimization · Summer Project", page_icon="✈️", layout="wide")
 st.title("✈️ Airline Revenue Optimization")
@@ -87,14 +87,56 @@ with tab_eval:
                 ("Fixed threshold = mean fare", fixed_threshold_policy(mean_fare)),
                 ("Accept all", accept_all_policy)]
     results = compare_policies(policies, solution, int(replications), int(seed))
-    rows = [{"Policy": name, "Mean revenue (₹)": r.mean_revenue, "Standard error (₹)": r.standard_error,
-             "Approx. 95% interval low (₹)": r.mean_revenue - 1.96*r.standard_error,
-             "Approx. 95% interval high (₹)": r.mean_revenue + 1.96*r.standard_error,
-             "Mean seats sold": r.mean_seats_sold, "Fill rate": r.fill_rate} for name, r in results.items()]
+    optimal_result = results["Optimal DP"]
+    rows = []
+    for name, result in results.items():
+        gap = paired_revenue_difference(optimal_result, result, "Optimal DP", name)
+        rows.append({
+            "Policy": name,
+            "Mean revenue (₹)": result.mean_revenue,
+            "Revenue SE (₹)": result.standard_error,
+            "Mean-revenue 95% low (₹)": result.mean_revenue - 1.96 * result.standard_error,
+            "Mean-revenue 95% high (₹)": result.mean_revenue + 1.96 * result.standard_error,
+            "Optimal minus policy (₹)": gap.mean_difference,
+            "Paired-gap SE (₹)": gap.standard_error,
+            "Paired-gap 95% low (₹)": gap.ci95_low,
+            "Paired-gap 95% high (₹)": gap.ci95_high,
+            "Mean seats sold": result.mean_seats_sold,
+            "Fill rate": result.fill_rate,
+        })
     comparison = pd.DataFrame(rows)
     st.dataframe(comparison, use_container_width=True, hide_index=True)
-    st.plotly_chart(px.bar(comparison, x="Policy", y="Mean revenue (₹)", error_y="Standard error (₹)"), use_container_width=True)
-    st.caption(f"Exact DP value: ₹{solution.expected_revenue:,.2f}; Monte Carlo is an estimate with sampling uncertainty.")
+    st.plotly_chart(
+        px.bar(comparison, x="Policy", y="Mean revenue (₹)", error_y="Revenue SE (₹)"),
+        use_container_width=True,
+    )
+    active_fares = np.unique(np.asarray(fares)[probabilities > 0])
+    stochastic_revenue_possible = (
+        0 < arrival_probability < 1
+        or (arrival_probability > 0 and active_fares.size > 1)
+    )
+    if (optimal_result.standard_error == 0 and capacity > 0 and horizon > 0
+            and stochastic_revenue_possible):
+        st.warning(
+            "All observed optimal-policy revenues were identical, so the empirical standard error is zero. "
+            "Rare outcomes may not have appeared; increase replications and repeat with another seed "
+            "before interpreting a zero-width Monte Carlo interval."
+        )
+    st.caption(
+        f"Exact DP value: ₹{solution.expected_revenue:,.2f}. "
+        f"Optimal-policy Monte Carlo estimate: ₹{optimal_result.mean_revenue:,.2f} "
+        f"± ₹{1.96 * optimal_result.standard_error:,.2f} (approx. 95% Monte Carlo interval)."
+    )
+    ce_gap = paired_revenue_difference(
+        optimal_result, results["Mean-fare CE policy"], "Optimal DP", "Mean-fare CE policy"
+    )
+    st.subheader("Certainty equivalence: compare policies under the true fare distribution")
+    st.write(
+        f"The estimated paired revenue gap (optimal minus CE) is ₹{ce_gap.mean_difference:,.0f}; "
+        f"its approximate 95% interval is ₹{ce_gap.ci95_low:,.0f} to ₹{ce_gap.ci95_high:,.0f}. "
+        "This interval uses replication-by-replication differences on common demand paths. "
+        "The CE value table itself belongs to a different, deterministic-fare model."
+    )
 
 with tab_notes:
     st.latex(r"V_t(x)=(1-\lambda)V_{t-1}(x)+\lambda\sum_i p_i\max\{f_i+V_{t-1}(x-1),V_{t-1}(x)\}")

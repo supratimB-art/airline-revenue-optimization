@@ -1,0 +1,23 @@
+Stress-test run
+===============
+
+Environment: Python 3.13.5, NumPy 2.3.5, pandas 2.2.3, Plotly 6.5.2
+
+Commands:
+  python -m compileall -q app src tests
+  python -m pytest -q
+
+Result:
+  68 passed
+
+Additional property stress test:
+  500 randomly generated combinations of capacity, horizon, arrival probability,
+  and discrete non-negative fare distributions passed checks for finite/non-negative
+  values, monotonicity of value in time and capacity, and nonincreasing marginal
+  seat value as capacity increases.
+
+Known validation limitation:
+  Streamlit was not installed in the offline validation runtime, so the dashboard
+  was syntax-compiled but not launched interactively. The project declares Streamlit
+  as a runtime dependency. The separate flight-price notebook was not rerun because
+  its original Flight_Prices.xlsx workbook was not supplied.

@@ -41,19 +41,21 @@ python -m pip install -e ".[dev]"
 streamlit run app/dashboard.py
 ```
 
-Run tests with `pytest`.
+Run tests with `pytest`. The stress-test record documents the current checks and environment limitations.
 
 ## Project structure
 
 - `app/dashboard.py` — interactive Streamlit dashboard
 - `src/airline_dp/model.py` — Bellman solver and bid-price thresholds
 - `src/airline_dp/policies.py` — optimal threshold and benchmark policies
-- `src/airline_dp/simulation.py` — reproducible Monte Carlo policy evaluation
+- `src/airline_dp/simulation.py` — reproducible Monte Carlo policy evaluation and paired policy gaps
 - `tests/` — model and simulation tests
 - `docs/learning_journey.md` — worked examples and progression of the study
 - `docs/flight_price_prediction_notes.md` — separate regression notebook and caveats
 - `docs/references.md` — attribution and references
 - `docs/research_notes.md` — proposed experiments and extensions
+- `docs/stress_testing.md` — reliability checks, results, and known test limitations
+- `TEST_RESULTS.txt` — recorded stress-test summary
 
 ## Baseline parameters
 
