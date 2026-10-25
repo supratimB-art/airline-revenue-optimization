@@ -17,7 +17,7 @@ This is an **independent learning project informed by academic guidance**, not a
 - **Airline seat-inventory control:** implemented the Bellman recursion for fare acceptance, with bid-price thresholds, simulation comparisons, and an interactive dashboard.
 - **Separate flight-price prediction notebook:** explored supervised regression on a scraped airfare dataset. This estimates price from features; it is not the same as deciding whether to accept a booking with limited inventory.
 
-More detailed notes are in [the learning journey](docs/learning_journey.md), [flight-price prediction notes](docs/flight_price_prediction_notes.md), and [source-material inventory](docs/source_material_inventory.md). The academic references are listed in [references](docs/references.md). A possible next application is specified in the [personal flight-buying assistant concept](docs/travel_purchase_assistant_spec.md); this is a product/technical design, not a claim that calendar or live fare integrations are already implemented.
+More detailed notes are in [the learning journey](docs/learning_journey.md), [flight-price prediction notes](docs/flight_price_prediction_notes.md), and [source-material inventory](docs/source_material_inventory.md). The academic references are listed in [references](docs/references.md). A possible next application is specified in the [personal flight-buying assistant concept](docs/travel_purchase_assistant_spec.md). The implementation's formal decision model, transition generators, benchmark protocol, and hand-computed test cases are in the [passenger flight-purchasing M0 specification](docs/flight_purchase_m0_spec.md). These are product/technical designs, not claims that calendar or live fare integrations are already implemented.
 
 ## Airline model
 
@@ -56,6 +56,7 @@ Run tests with `pytest`. The stress-test record documents the current checks and
 - `docs/research_notes.md` — proposed experiments and extensions
 - `docs/stress_testing.md` — reliability checks, results, and known test limitations
 - `docs/travel_purchase_assistant_spec.md` — proposed calendar-aware fare tracker and buy/wait decision model
+- `docs/flight_purchase_m0_spec.md` — formal passenger DP state, transition matrices, CVaR variant, tuned baselines, oracle, and hand-computed test cases
 - `TEST_RESULTS.txt` — recorded stress-test summary
 
 ## Baseline parameters
